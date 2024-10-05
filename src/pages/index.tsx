@@ -1,47 +1,83 @@
 import Head from "next/head";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [text, setText] = useState("");
+  //const [text, setText] = useState("");
 
-  useEffect(() => {
-    const request = async () => {
-      const result = await fetch("/api/pokemon");
-      // This is just an example to obtain data from the endpoint. Hint :) avoid no typesafety we hate that
-      const resultJson = await result.json();
-      console.log({ resultJson });
-      setText(resultJson.message);
-    };
-    void request();
-  }, []);
+  // useEffect(() => {
+  //   const request = async () => {
+  //     const result = await fetch("/api/pokemon");
+  //     // This is just an example to obtain data from the endpoint. Hint :) avoid no typesafety we hate that
+  //     const resultJson = await result.json();
+  //     console.log({ resultJson });
+  //     setText(resultJson.message);
+  //   };
+  //   void request();
+  // }, []);
 
   return (
     <>
       <Head>
-        <title>Condorsoft</title>
-        <meta name="description" content="Condorsoft technical test" />
+        <title>Home</title>
+        <meta
+          name="description"
+          content="Condorsoft technical test - poxedex"
+        />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#04040c] to-[#15162c]">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-            Condorsoft Technical Test <p>{text}</p>
-          </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href="https://condorsoft.dev/"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">About our family →</h3>
-              <div className="text-lg">
-                We create the best products and look for the best.
-              </div>
-            </Link>
+      <div className="flex grow items-center justify-center">
+        <PokedexComponent />
+      </div>
+    </>
+  );
+}
+
+function PokedexComponent() {
+  return (
+    <div className="relative">
+      <Image
+        src={"/img/pokedex-skeleton.png"}
+        width={700}
+        height={700}
+        alt="pokedex skeleton"
+      ></Image>
+      {/* pokemon description */}
+      <div className="absolute left-[63px] top-[165px] max-h-36 w-56 ">
+        <div className="flex justify-between">
+          <span className="font-bold">Pikachu</span>
+          <span className="font-semibold">Nro 25</span>
+        </div>
+        <span className="my-1 block text-xs">electric</span>
+        <p className="text-xs">
+          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Atque,
+          neque.
+        </p>
+        <div className="mt-2 flex justify-around ">
+          <div className="flex flex-col align-middle text-sm">
+            <span className="font-semibold">Height</span>
+            <span>1' 04"</span>
+          </div>
+          <div className="flex flex-col align-middle text-sm">
+            <span className="font-semibold">Weight</span>
+            <span>13.2 lbs</span>
           </div>
         </div>
-      </main>
-    </>
+      </div>
+      <span className="absolute bottom-[45px] left-[106px] cursor-pointer text-xl font-bold">
+        Search
+      </span>
+      <Image
+        src={"/img/pikachu.png"}
+        width={200}
+        height={200}
+        alt="pokedex skeleton"
+        className="absolute right-16 top-48 "
+      ></Image>
+      <span className="absolute bottom-[44px] right-[185px] cursor-pointer font-bold">
+        View More
+      </span>
+    </div>
   );
 }
