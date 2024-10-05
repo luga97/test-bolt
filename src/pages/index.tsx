@@ -2,6 +2,7 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Pokemon } from "~/types";
 
 export default function Home() {
   //const [text, setText] = useState("");
@@ -35,6 +36,24 @@ export default function Home() {
 }
 
 function PokedexComponent() {
+  const pokemon: Pokemon = {
+    name: "Pikachu",
+    number: 25,
+    type: "Electric",
+    description:
+      "When it is angered, it immediately discharges the energy stored in pouches in its cheeks.",
+    imgUri: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/025.png",
+    height: 0.4, // en metros
+    weight: 6.0, // en kilogramos
+    GenderRadioMale: 50,
+    GenderRadioFemale: 50,
+    Abilities: ["Static", "Lightning Rod"],
+    EggGroups: ["Field", "Fairy"],
+    evolutionDescription:
+      "Pikachu evolves into Raichu when exposed to a Thunder Stone.",
+    evolutionImgUri:
+      "https://assets.pokemon.com/assets/cms2/img/pokedex/full/026.png",
+  };
   return (
     <div className="relative">
       <Image
@@ -46,22 +65,19 @@ function PokedexComponent() {
       {/* pokemon description */}
       <div className="absolute left-[63px] top-[165px] max-h-36 w-56 ">
         <div className="flex justify-between">
-          <span className="font-bold">Pikachu</span>
-          <span className="font-semibold">N° 25</span>
+          <span className="font-bold">{pokemon.name}</span>
+          <span className="font-semibold">N° {pokemon.number}</span>
         </div>
-        <span className="my-1 block text-xs">electric</span>
-        <p className="text-xs">
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Atque,
-          neque.
-        </p>
+        <span className="my-1 block text-xs">{pokemon.type}</span>
+        <p className="text-xs">{pokemon.description}</p>
         <div className="mt-2 flex justify-around ">
           <div className="flex flex-col align-middle text-sm">
             <span className="font-semibold">Height</span>
-            <span>1' 04"</span>
+            <span>{pokemon.height} mts</span>
           </div>
           <div className="flex flex-col align-middle text-sm">
             <span className="font-semibold">Weight</span>
-            <span>13.2 lbs</span>
+            <span>{[pokemon.weight]} lbs</span>
           </div>
         </div>
       </div>
@@ -69,7 +85,7 @@ function PokedexComponent() {
         Search
       </span>
       <Image
-        src={"/img/pikachu.png"}
+        src={pokemon.imgUri}
         width={200}
         height={200}
         alt="pokedex skeleton"

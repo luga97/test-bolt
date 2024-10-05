@@ -27,7 +27,7 @@ export default function Pokedex() {
   return (
     <div className="flex grow justify-center py-10 align-middle">
       <div className="flex w-5/6 flex-col gap-4 rounded-xl bg-[#000000B2] p-6 text-white">
-        <span className="text-xl font-bold">Poxedex</span>
+        <span className="text-2xl font-bold">Poxedex</span>
         <div className=" flex flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="flex max-w-2xl grow gap-8 self-stretch">
             <div className="flex w-full items-center gap-4 overflow-hidden rounded-xl bg-[#272727] pl-4">
