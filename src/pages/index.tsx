@@ -47,7 +47,7 @@ function PokedexComponent() {
       <div className="absolute left-[63px] top-[165px] max-h-36 w-56 ">
         <div className="flex justify-between">
           <span className="font-bold">Pikachu</span>
-          <span className="font-semibold">Nro 25</span>
+          <span className="font-semibold">N° 25</span>
         </div>
         <span className="my-1 block text-xs">electric</span>
         <p className="text-xs">

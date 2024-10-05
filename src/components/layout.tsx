@@ -9,9 +9,7 @@ import { NavBar } from "./navbar";
 export default function Layout({ children }: PropsWithChildren) {
   return (
     <>
-      <main
-        className={`flex min-h-screen flex-col  bg-pokemon-landscape bg-cover ${inter.className}`}
-      >
+      <main className={`flex min-h-screen flex-col ${inter.className}`}>
         <NavBar />
         {children}
       </main>
