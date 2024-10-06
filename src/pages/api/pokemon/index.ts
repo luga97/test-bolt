@@ -1,9 +1,9 @@
 // pages/api/pokemon/[id].ts
-import { NextApiRequest, NextApiResponse } from "next";
-import { Pokemon } from "~/types";
-import formidable, { IncomingForm, Files, Fields } from "formidable";
+import type { NextApiRequest, NextApiResponse } from "next";
+import formidable from "formidable";
 import path from "path";
 import fs from "fs";
+import { randomUUID } from "node:crypto";
 
 export const config = {
   api: {
@@ -35,8 +35,7 @@ async function postHandler(req: NextApiRequest, res: NextApiResponse) {
     Object.entries(files).forEach(([key, value]) => {
       const file = value![0]!; // Obtenemos el primer archivo
       const extension = path.extname(file.originalFilename!);
-      const timestamp = Date.now();
-      const newFilename = `${key}_${timestamp}${extension}`;
+      const newFilename = `${key}_${randomUUID()}${extension}`;
 
       const newFilePath = path.join(uploadsDir, newFilename);
 
