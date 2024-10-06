@@ -1,37 +1,73 @@
-import React, { ChangeEvent, FormEvent, useId, useState } from "react";
+import React, { ChangeEvent, useEffect, useId, useState } from "react";
 import Image from "next/image";
 import { IoMdFemale, IoMdMale } from "react-icons/io";
 import TagsInputComponent from "~/components/tagsInputComponent";
-import { Router, useRouter } from "next/router";
+import { useRouter } from "next/router";
+import { Pokemon } from "~/types";
 import { SelectPictureComponent } from "~/components/SelectPictureComponent";
 import { MdError } from "react-icons/md";
 import { useSweetAlert } from "~/hooks/useSweetAlert";
-import { Pokemon } from "~/types";
+import { fetchImage } from "~/hooks/fetchImage";
 export default function CreatePokemon() {
   const router = useRouter();
   const { showAlert, showConfirm } = useSweetAlert();
+  const [pokemon, setPokemon] = useState<Pokemon | undefined>();
 
-  const [pokemonName, setPokemonName] = useState("");
-  const [pokemonNumber, setPokemonNumber] = useState<number | undefined>();
+  const [pokemonName, setPokemonName] = useState<string>("");
+  const [pokemonNumber, setPokemonNumber] = useState<number>(0);
   const [pokemonPreview, setPokemonPreview] = useState<File | undefined>();
-  const [pokemonType, setPokemonType] = useState("");
-  const [pokemonDescription, setPokemonDescription] = useState("");
-  const [pokemonHeight, setPokemonHeight] = useState<number | undefined>();
-  const [pokemonWeight, setPokemonWeight] = useState<number | undefined>();
-  const [maleGenderRadio, setMaleGenderRadio] = useState<number | undefined>();
-  const [femaleGenderRadio, setFemaleGenderRadio] = useState<
-    number | undefined
-  >();
+  const [pokemonType, setPokemonType] = useState<string>("");
+  const [pokemonDescription, setPokemonDescription] = useState<string>("");
+  const [pokemonHeight, setPokemonHeight] = useState<number>(0);
+  const [pokemonWeight, setPokemonWeight] = useState<number>(0);
+  const [maleGenderRadio, setMaleGenderRadio] = useState<number>(0);
+  const [femaleGenderRadio, setFemaleGenderRadio] = useState<number>(0);
   const [abilities, setAbilities] = useState<string[]>([]);
   const [eggGroups, setEggGroups] = useState<string[]>([]);
-  const [evolutionDescription, setEvolutionDescription] = useState("");
+  const [evolutionDescription, setEvolutionDescription] = useState<string>("");
   const [evolutionPreview, setEvolutionPreview] = useState<File | undefined>();
   const [errorOnsubmit, setErrorOnSubmit] = useState<string | undefined>();
+
+  useEffect(() => {
+    const request = async () => {
+      const result = await fetch(`/api/pokemon/${router.query.id as string}`);
+      const resultJson = (await result.json()) as Pokemon;
+      console.log({ resultJson });
+      setPokemon(resultJson);
+    };
+    void request();
+  }, [router.query.id]);
+
+  useEffect(() => {
+    setPokemonName(pokemon?.name ?? "");
+    setPokemonNumber(pokemon?.number ?? 0);
+    setPokemonType(pokemon?.type ?? "");
+    setPokemonDescription(pokemon?.description ?? "");
+    setPokemonHeight(pokemon?.height ?? 0);
+    setPokemonWeight(pokemon?.weight ?? 0);
+    setMaleGenderRadio(pokemon?.GenderRadioMale ?? 0);
+    setFemaleGenderRadio(pokemon?.GenderRadioFemale ?? 0);
+    setAbilities(pokemon?.Abilities ?? []);
+    setEggGroups(pokemon?.EggGroups ?? []);
+    setEvolutionDescription(pokemon?.evolutionDescription ?? "");
+    void setImages();
+
+    async function setImages() {
+      if (pokemon?.imgUri) {
+        const result = await fetchImage(pokemon.imgUri);
+        setPokemonPreview(result);
+      }
+
+      if (pokemon?.evolutionImgUri) {
+        const result = await fetchImage(pokemon.evolutionImgUri);
+        setEvolutionPreview(result);
+      }
+    }
+  }, [pokemon]);
+
   const handlePokemonPreviewChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      //console.log("pokemon");
-      //const fileUrl = URL.createObjectURL(file);
       setPokemonPreview(file);
     }
   };
@@ -41,7 +77,6 @@ export default function CreatePokemon() {
   ) => {
     const file = event.target.files?.[0];
     if (file) {
-      console.log("evolucion");
       setEvolutionPreview(file);
     }
   };
@@ -102,25 +137,14 @@ export default function CreatePokemon() {
           text: "your pokemon is already saved",
         });
         await router.push("/pokedex");
-        alert("Formulario enviado con éxito");
       } catch (error) {
         console.error("Error al enviar los datos:", error);
-        alert("Hubo un error al enviar el formulario");
       }
     } else {
       setErrorOnSubmit("please fill all the fields");
     }
   }
-
-  async function handleCancel() {
-    const result = await showConfirm({
-      title: "alert",
-      text: "Are you sure that you want cancel?",
-    });
-    if (result.isConfirmed) {
-      await router.push("/pokedex");
-    }
-  }
+  //   console.log(errorOnsubmit);
   return (
     <div className="mx-auto my-10 flex w-1/3 min-w-max grow flex-col gap-4 rounded-xl bg-[#000000B2] px-6 py-8 text-white">
       <div className="text-2xl font-bold">New Pokemon</div>
@@ -178,6 +202,7 @@ export default function CreatePokemon() {
           onChange={(e) => setPokemonWeight(parseInt(e.target.value))}
         />
       </div>
+
       <div className="flex gap-4">
         <div className="flex items-center gap-4 rounded bg-[#272727] px-4 py-2">
           <IoMdMale />
@@ -202,10 +227,12 @@ export default function CreatePokemon() {
       </div>
       <TagsInputComponent
         placeholder={"abilities"}
+        tagsProp={pokemon?.Abilities ?? []}
         handleTags={handleAbilities}
       />
       <TagsInputComponent
         placeholder="egg groups"
+        tagsProp={pokemon?.EggGroups ?? []}
         handleTags={handleEggsGroups}
       />
       <input
@@ -234,7 +261,7 @@ export default function CreatePokemon() {
       </div>
       <div className="flex justify-end gap-2">
         <button
-          onClick={handleCancel}
+          onClick={() => router.replace("/pokedex")}
           className="w-24 rounded-lg bg-white p-2 text-black"
         >
           Cancel

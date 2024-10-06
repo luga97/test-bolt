@@ -10,13 +10,17 @@ import { HiXMark } from "react-icons/hi2";
 export default function TagsInputComponent({
   handleTags,
   placeholder,
+  tagsProp,
 }: {
   handleTags: (tags: string[]) => void;
   placeholder: string;
+  tagsProp?: string[];
 }) {
   const [tags, setTags] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => setTags(tagsProp ?? []), [tagsProp]);
 
   useEffect(() => {
     handleTags(tags);
@@ -27,14 +31,14 @@ export default function TagsInputComponent({
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    console.log(event);
+    //console.log(event);
     if (
       (event.key === "Enter" || event.key === "," || event.key === "Tab") &&
       inputValue.trim() !== "" &&
       !inputValue.includes(",")
     ) {
       event.preventDefault();
-      setTags((prevState) => [...prevState, inputValue]);
+      setTags((prevState) => [...prevState, inputValue.trim()]);
       setInputValue("");
     }
 
@@ -51,6 +55,13 @@ export default function TagsInputComponent({
   const handleClick = () => {
     if (inputRef.current) {
       inputRef.current.focus(); // Hace foco en el input
+    }
+  };
+
+  const handleOnBlur = () => {
+    if (inputValue.trim() !== "") {
+      setTags((prevState) => [...prevState, inputValue.trim()]);
+      setInputValue("");
     }
   };
 
@@ -78,6 +89,7 @@ export default function TagsInputComponent({
         ref={inputRef}
         placeholder={tags.length === 0 ? placeholder : undefined}
         value={inputValue}
+        onBlur={handleOnBlur}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         className="min-w-0 grow bg-[#272727]  focus:outline-none"

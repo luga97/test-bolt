@@ -42,7 +42,8 @@ function PokedexComponent() {
     type: "Electric",
     description:
       "When it is angered, it immediately discharges the energy stored in pouches in its cheeks.",
-    imgUri: "https://assets.pokemon.com/assets/cms2/img/pokedex/full/025.png",
+    pokemonImage:
+      "https://assets.pokemon.com/assets/cms2/img/pokedex/full/025.png",
     height: 0.4, // en metros
     weight: 6.0, // en kilogramos
     GenderRadioMale: 50,
@@ -85,7 +86,7 @@ function PokedexComponent() {
         Search
       </span>
       <Image
-        src={pokemon.imgUri}
+        src={pokemon.pokemonImage}
         width={200}
         height={200}
         alt="pokedex skeleton"
