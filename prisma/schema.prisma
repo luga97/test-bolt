@@ -6,15 +6,23 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
+    provider = "postgresql"
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    @@index([name])
+model Pokemon {
+  id                     Int      @id @default(autoincrement())
+  name                   String
+  number                 Int      @unique
+  type                   String
+  description            String
+  imgUri                 String
+  height                 Float
+  weight                 Float
+  GenderRadioMale       Int
+  GenderRadioFemale     Int
+  abilities              String
+  eggGroups              String
+  evolutionDescription   String
+  evolutionImgUri       String
 }

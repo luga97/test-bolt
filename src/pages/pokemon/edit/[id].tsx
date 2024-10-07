@@ -115,16 +115,15 @@ export default function CreatePokemon() {
         data.append("description", pokemonDescription);
         data.append("height", String(pokemonHeight));
         data.append("weight", String(pokemonWeight));
-        data.append("maleGenderRatio", String(maleGenderRadio));
-        data.append("femaleGenderRatio", String(femaleGenderRadio));
+        data.append("GenderRadioMale", String(maleGenderRadio));
+        data.append("GenderRadioFemale", String(femaleGenderRadio));
         data.append("abilities", abilities.join(","));
         data.append("eggGroups", eggGroups.join(","));
         data.append("evolutionDescription", evolutionDescription);
-        data.append("evolutionPreview", evolutionPreview!);
+        data.append("evolutionImgUri", evolutionPreview!);
 
         const response = await fetch("/api/pokemon", {
           method: "POST",
-
           body: data,
         });
 

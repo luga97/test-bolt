@@ -1,14 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Pokemon } from "~/types";
 
-type ResponseData = {
-  pokemons: Pokemon[];
-};
+import { PrismaClient } from "@prisma/client";
 
-export default function handler(
+const prisma = new PrismaClient();
+
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Pokemon[]>,
 ) {
+  const pokemons2 = await prisma.pokemon.findMany();
+  console.log(pokemons2);
   const pokemons: Pokemon[] = Array(100).fill({
     name: "Pikachu",
     number: 25,
