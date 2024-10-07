@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { IoMdAddCircle } from "react-icons/io";
 import { IoFilterSharp, IoSearch } from "react-icons/io5";
 import Image from "next/image";
@@ -9,6 +9,12 @@ import { SpinnerComponent } from "~/components/SpinnerComponent";
 export default function Pokedex() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [searchText, setSearchText] = useState<string>("");
+
+  const pokemonList = useMemo(
+    () => pokemons.filter((p) => p.name.toLowerCase().includes(searchText)),
+    [pokemons, searchText],
+  );
   useEffect(() => {
     const request = async () => {
       setLoading(true);
@@ -33,6 +39,8 @@ export default function Pokedex() {
               <input
                 type="text"
                 placeholder="Search pokemon"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
                 className="h-10 w-full  bg-[#272727] focus:outline-none"
               ></input>
             </div>
@@ -53,8 +61,8 @@ export default function Pokedex() {
           </Link>
         </div>
         <div className="flex w-full flex-wrap items-center justify-around gap-8">
-          {pokemons.length > 0 ? (
-            pokemons.map((x) => <PokemonItemList key={x.name} pokemon={x} />)
+          {pokemonList.length > 0 ? (
+            pokemonList.map((x) => <PokemonItemList key={x.name} pokemon={x} />)
           ) : loading ? (
             <SpinnerComponent />
           ) : (
