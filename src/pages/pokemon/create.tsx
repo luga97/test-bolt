@@ -12,7 +12,6 @@ export default function CreatePokemon() {
   const { showAlert, showConfirm } = useSweetAlert();
 
   const [pokemonName, setPokemonName] = useState("");
-  const [pokemonNumber, setPokemonNumber] = useState<number | undefined>();
   const [pokemonPreview, setPokemonPreview] = useState<File | undefined>();
   const [pokemonType, setPokemonType] = useState("");
   const [pokemonDescription, setPokemonDescription] = useState("");
@@ -56,7 +55,6 @@ export default function CreatePokemon() {
   async function onSubmit() {
     const isAllFilled =
       Boolean(pokemonName) &&
-      Boolean(pokemonNumber) &&
       Boolean(pokemonPreview) &&
       Boolean(pokemonType) &&
       Boolean(pokemonDescription) &&
@@ -74,18 +72,17 @@ export default function CreatePokemon() {
       try {
         const data = new FormData();
         data.append("name", pokemonName);
-        data.append("number", String(pokemonNumber));
         data.append("imgUri", pokemonPreview!);
         data.append("type", pokemonType);
         data.append("description", pokemonDescription);
         data.append("height", String(pokemonHeight));
         data.append("weight", String(pokemonWeight));
-        data.append("maleGenderRatio", String(maleGenderRadio));
-        data.append("femaleGenderRatio", String(femaleGenderRadio));
+        data.append("GenderRadioMale", String(maleGenderRadio));
+        data.append("GenderRadioFemale", String(femaleGenderRadio));
         data.append("abilities", abilities.join(","));
         data.append("eggGroups", eggGroups.join(","));
         data.append("evolutionDescription", evolutionDescription);
-        data.append("evolutionPreview", evolutionPreview!);
+        data.append("evolutionImgUri", evolutionPreview!);
 
         const response = await fetch("/api/pokemon", {
           method: "POST",
@@ -127,17 +124,10 @@ export default function CreatePokemon() {
       <div className=" flex justify-between gap-4">
         <input
           type="text"
-          className="focus:outline-bg-none grow rounded bg-[#272727] px-4 focus:outline-none"
+          className="focus:outline-bg-none grow rounded bg-[#272727] px-4 py-2 focus:outline-none"
           placeholder="Name"
           value={pokemonName}
           onChange={(e) => setPokemonName(e.target.value)}
-        />
-        <input
-          type="number"
-          className="grow rounded bg-[#272727] px-4 py-1 focus:outline-none"
-          placeholder="Number"
-          value={pokemonNumber}
-          onChange={(e) => setPokemonNumber(parseInt(e.target.value))}
         />
       </div>
       <div className=" flex flex-col items-center rounded-lg bg-[#272727] p-4">

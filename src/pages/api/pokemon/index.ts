@@ -4,13 +4,15 @@ import formidable from "formidable";
 import path from "path";
 import fs from "fs";
 import { randomUUID } from "node:crypto";
-import type { Pokemon } from "@prisma/client";
+import { PrismaClient, type Pokemon } from "@prisma/client";
 
 export const config = {
   api: {
     bodyParser: false,
   },
 };
+
+const prisma = new PrismaClient();
 
 export default async function handler(
   req: NextApiRequest,
@@ -35,7 +37,7 @@ async function postHandler(req: NextApiRequest, res: NextApiResponse) {
       const pokemonKey = key as keyof Pokemon;
 
       switch (pokemonKey) {
-        case "number":
+        case "id":
           newPokemon[pokemonKey] = parseFloat(value![0]!);
           break;
         case "name":
@@ -71,6 +73,12 @@ async function postHandler(req: NextApiRequest, res: NextApiResponse) {
       }
     });
     console.log(newPokemon);
+    const { id, ...data } = newPokemon;
+    await prisma.pokemon.upsert({
+      create: data,
+      update: data,
+      where: { id: id || 0 },
+    });
     //TODO Lógica adicional para manejar los datos (guardarlos en una base de datos, etc.)
     return res.status(200).json({
       message: "Formulario recibido con éxito",
@@ -102,10 +110,10 @@ async function saveFiles(files: formidable.Files<string>): Promise<Pokemon> {
     const pokemonKey = key as keyof Pokemon;
     switch (pokemonKey) {
       case "imgUri":
-        result[pokemonKey] = `/img/upload/${newFilename}`;
+        result[pokemonKey] = `/uploads/${newFilename}`;
         break;
       case "evolutionImgUri":
-        result[pokemonKey] = `/img/upload/${newFilename}`;
+        result[pokemonKey] = `/uploads/${newFilename}`;
         break;
       default:
         console.log("???", key);

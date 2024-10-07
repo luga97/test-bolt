@@ -1,7 +1,8 @@
 // pages/api/pokemon/[id].ts
-import { NextApiRequest, NextApiResponse } from "next";
-import { Pokemon } from "~/types";
-import formidable, { IncomingForm, Files, Fields } from "formidable";
+import type { NextApiRequest, NextApiResponse } from "next";
+import type { Pokemon as PokemonDTO } from "~/types";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 export const config = {
   api: {
@@ -15,13 +16,13 @@ export default async function handler(
 ) {
   console.log(req.method);
   if (req.method === "GET") {
-    getHandler(req, res);
+    await getHandler(req, res);
   } else {
     res.status(405).json({ error: "method not allowed" });
   }
 }
 
-function getHandler(req: NextApiRequest, res: NextApiResponse) {
+async function getHandler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
 
   if (!id) {
@@ -29,30 +30,18 @@ function getHandler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
-    //todo from database
-    // const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-    // if (!response.ok) {
-    //   return res.status(response.status).json({ message: "Pokemon not found" });
-    // }
-    //const data: Pokemon = (await response.json()) as Pokemon;
+    const p = await prisma.pokemon.findFirstOrThrow({
+      where: { id: parseInt(id as string) },
+    });
+    const Abilities = p.abilities.split(",");
+    const EggGroups = p.eggGroups.split(",");
 
-    const data: Pokemon = {
-      name: "Pikachu",
-      number: 25,
-      type: "Electric",
-      description:
-        "When it is angered, it immediately discharges the energy stored in pouches in its cheeks.",
-      imgUri: "/img/pikachu.png",
-      height: 0.4, // en metros
-      weight: 6.0, // en kilogramos
-      GenderRadioMale: 50,
-      GenderRadioFemale: 50,
-      Abilities: ["Static", "Lightning Rod"],
-      EggGroups: ["Field", "Fairy"],
-      evolutionDescription:
-        "Pikachu evolves into Raichu when exposed to a Thunder Stone.",
-      evolutionImgUri: "/img/pikachu_evol.png",
-    };
+    const data: PokemonDTO = {
+      ...p,
+      Abilities,
+      EggGroups,
+      number: p.id,
+    } as PokemonDTO;
 
     return res.status(200).json(data);
   } catch (error) {

@@ -108,8 +108,8 @@ export default function CreatePokemon() {
     if (isAllFilled) {
       try {
         const data = new FormData();
+        data.append("id", String(pokemonNumber));
         data.append("name", pokemonName);
-        data.append("number", String(pokemonNumber));
         data.append("imgUri", pokemonPreview!);
         data.append("type", pokemonType);
         data.append("description", pokemonDescription);
@@ -157,9 +157,10 @@ export default function CreatePokemon() {
         />
         <input
           type="number"
-          className="grow rounded bg-[#272727] px-4 py-1 focus:outline-none"
+          className="grow rounded bg-[#272727] px-4 py-1 focus:outline-none disabled:bg-[#27272788] disabled:text-gray-500"
           placeholder="Number"
           value={pokemonNumber}
+          disabled
           onChange={(e) => setPokemonNumber(parseInt(e.target.value))}
         />
       </div>
