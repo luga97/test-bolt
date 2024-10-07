@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { Pokemon, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import type { Pokemon as PokemonDTO } from "~/types";
 const prisma = new PrismaClient();
 

@@ -8,6 +8,7 @@ import { SelectPictureComponent } from "~/components/SelectPictureComponent";
 import { MdError } from "react-icons/md";
 import { useSweetAlert } from "~/hooks/useSweetAlert";
 import { fetchImage } from "~/hooks/fetchImage";
+import { SpinnerComponent } from "~/components/SpinnerComponent";
 export default function CreatePokemon() {
   const router = useRouter();
   const { showAlert, showConfirm } = useSweetAlert();
@@ -27,6 +28,7 @@ export default function CreatePokemon() {
   const [evolutionDescription, setEvolutionDescription] = useState<string>("");
   const [evolutionPreview, setEvolutionPreview] = useState<File | undefined>();
   const [errorOnsubmit, setErrorOnSubmit] = useState<string | undefined>();
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const request = async () => {
@@ -34,6 +36,7 @@ export default function CreatePokemon() {
       const resultJson = (await result.json()) as Pokemon;
       console.log({ resultJson });
       setPokemon(resultJson);
+      setLoading(false);
     };
     void request();
   }, [router.query.id]);
@@ -89,6 +92,7 @@ export default function CreatePokemon() {
   }
 
   async function onSubmit() {
+    setLoading(true);
     const isAllFilled =
       Boolean(pokemonName) &&
       Boolean(pokemonNumber) &&
@@ -142,137 +146,148 @@ export default function CreatePokemon() {
     } else {
       setErrorOnSubmit("please fill all the fields");
     }
+    setLoading(false);
   }
   //   console.log(errorOnsubmit);
   return (
     <div className="mx-auto my-10 flex w-1/3 min-w-max grow flex-col gap-4 rounded-xl bg-[#000000B2] px-6 py-8 text-white">
       <div className="text-2xl font-bold">New Pokemon</div>
-      <div className=" flex justify-between gap-4">
-        <input
-          type="text"
-          className="focus:outline-bg-none grow rounded bg-[#272727] px-4 focus:outline-none"
-          placeholder="Name"
-          value={pokemonName}
-          onChange={(e) => setPokemonName(e.target.value)}
-        />
-        <input
-          type="number"
-          className="grow rounded bg-[#272727] px-4 py-1 focus:outline-none disabled:bg-[#27272788] disabled:text-gray-500"
-          placeholder="Number"
-          value={pokemonNumber}
-          disabled
-          onChange={(e) => setPokemonNumber(parseInt(e.target.value))}
-        />
-      </div>
-      <div className=" flex flex-col items-center rounded-lg bg-[#272727] p-4">
-        <span className="font-bold">Pokemon Photo</span>
-        <SelectPictureComponent
-          handler={handlePokemonPreviewChange}
-          imagePreview={
-            pokemonPreview ? URL.createObjectURL(pokemonPreview) : undefined
-          }
-        />
-      </div>
-      <input
-        type="text"
-        placeholder="type"
-        className="rounded bg-[#272727] px-4 py-2 focus:outline-none"
-        value={pokemonType}
-        onChange={(e) => setPokemonType(e.target.value)}
-      />
-      <textarea
-        placeholder="Description"
-        className="rounded bg-[#272727] px-4 py-1 focus:outline-none"
-        value={pokemonDescription}
-        onChange={(e) => setPokemonDescription(e.target.value)}
-      />
-      <div className="flex justify-between gap-4">
-        <input
-          type="number"
-          placeholder="Height"
-          className="grow rounded-lg bg-[#272727] px-4 py-2 focus:outline-none "
-          value={pokemonHeight}
-          onChange={(e) => setPokemonHeight(parseInt(e.target.value))}
-        />
-        <input
-          type="number"
-          placeholder="weight"
-          className="grow rounded-lg bg-[#272727] px-4 py-2 focus:outline-none"
-          value={pokemonWeight}
-          onChange={(e) => setPokemonWeight(parseInt(e.target.value))}
-        />
-      </div>
-
-      <div className="flex gap-4">
-        <div className="flex items-center gap-4 rounded bg-[#272727] px-4 py-2">
-          <IoMdMale />
+      {loading ? (
+        <SpinnerComponent />
+      ) : pokemon ? (
+        <>
+          {" "}
+          <div className=" flex justify-between gap-4">
+            <input
+              type="text"
+              className="focus:outline-bg-none grow rounded bg-[#272727] px-4 focus:outline-none"
+              placeholder="Name"
+              value={pokemonName}
+              onChange={(e) => setPokemonName(e.target.value)}
+            />
+            <input
+              type="number"
+              className="grow rounded bg-[#272727] px-4 py-1 focus:outline-none disabled:bg-[#27272788] disabled:text-gray-500"
+              placeholder="Number"
+              value={pokemonNumber}
+              disabled
+              onChange={(e) => setPokemonNumber(parseInt(e.target.value))}
+            />
+          </div>
+          <div className=" flex flex-col items-center rounded-lg bg-[#272727] p-4">
+            <span className="font-bold">Pokemon Photo</span>
+            <SelectPictureComponent
+              handler={handlePokemonPreviewChange}
+              imagePreview={
+                pokemonPreview ? URL.createObjectURL(pokemonPreview) : undefined
+              }
+            />
+          </div>
           <input
-            type="number"
-            placeholder="gender ratio"
-            className=" rounded-lg bg-[#272727] focus:outline-none"
-            value={maleGenderRadio}
-            onChange={(e) => setMaleGenderRadio(parseInt(e.target.value))}
+            type="text"
+            placeholder="type"
+            className="rounded bg-[#272727] px-4 py-2 focus:outline-none"
+            value={pokemonType}
+            onChange={(e) => setPokemonType(e.target.value)}
           />
-        </div>
-        <div className="flex items-center gap-4 rounded bg-[#272727] px-4 py-2">
-          <IoMdFemale />
+          <textarea
+            placeholder="Description"
+            className="rounded bg-[#272727] px-4 py-1 focus:outline-none"
+            value={pokemonDescription}
+            onChange={(e) => setPokemonDescription(e.target.value)}
+          />
+          <div className="flex justify-between gap-4">
+            <input
+              type="number"
+              placeholder="Height"
+              className="grow rounded-lg bg-[#272727] px-4 py-2 focus:outline-none "
+              value={pokemonHeight}
+              onChange={(e) => setPokemonHeight(parseInt(e.target.value))}
+            />
+            <input
+              type="number"
+              placeholder="weight"
+              className="grow rounded-lg bg-[#272727] px-4 py-2 focus:outline-none"
+              value={pokemonWeight}
+              onChange={(e) => setPokemonWeight(parseInt(e.target.value))}
+            />
+          </div>
+          <div className="flex gap-4">
+            <div className="flex items-center gap-4 rounded bg-[#272727] px-4 py-2">
+              <IoMdMale />
+              <input
+                type="number"
+                placeholder="gender ratio"
+                className=" rounded-lg bg-[#272727] focus:outline-none"
+                value={maleGenderRadio}
+                onChange={(e) => setMaleGenderRadio(parseInt(e.target.value))}
+              />
+            </div>
+            <div className="flex items-center gap-4 rounded bg-[#272727] px-4 py-2">
+              <IoMdFemale />
+              <input
+                type="number"
+                placeholder="gender ratio"
+                className="   rounded-lg bg-[#272727] focus:outline-none"
+                value={femaleGenderRadio}
+                onChange={(e) => setFemaleGenderRadio(parseInt(e.target.value))}
+              />
+            </div>
+          </div>
+          <TagsInputComponent
+            placeholder={"abilities"}
+            tagsProp={pokemon?.Abilities ?? []}
+            handleTags={handleAbilities}
+          />
+          <TagsInputComponent
+            placeholder="egg groups"
+            tagsProp={pokemon?.EggGroups ?? []}
+            handleTags={handleEggsGroups}
+          />
           <input
-            type="number"
-            placeholder="gender ratio"
-            className="   rounded-lg bg-[#272727] focus:outline-none"
-            value={femaleGenderRadio}
-            onChange={(e) => setFemaleGenderRadio(parseInt(e.target.value))}
+            type="text"
+            placeholder="evolution description"
+            className="  rounded-lg bg-[#272727] px-4 py-2 focus:outline-none"
+            value={evolutionDescription}
+            onChange={(e) => setEvolutionDescription(e.target.value)}
           />
-        </div>
-      </div>
-      <TagsInputComponent
-        placeholder={"abilities"}
-        tagsProp={pokemon?.Abilities ?? []}
-        handleTags={handleAbilities}
-      />
-      <TagsInputComponent
-        placeholder="egg groups"
-        tagsProp={pokemon?.EggGroups ?? []}
-        handleTags={handleEggsGroups}
-      />
-      <input
-        type="text"
-        placeholder="evolution description"
-        className="  rounded-lg bg-[#272727] px-4 py-2 focus:outline-none"
-        value={evolutionDescription}
-        onChange={(e) => setEvolutionDescription(e.target.value)}
-      />
-      <div className=" flex flex-col items-center rounded-lg bg-[#272727] p-4">
-        <span className="font-bold">Evolution Photo</span>
-        <SelectPictureComponent
-          handler={handleEvolutionPreviewChange}
-          imagePreview={
-            evolutionPreview ? URL.createObjectURL(evolutionPreview) : undefined
-          }
-        />
-      </div>
-      <div
-        className={`${
-          errorOnsubmit == undefined ? "hidden" : "flex"
-        } items-center justify-end gap-2 text-red-500`}
-      >
-        <MdError size={22} />
-        <span className="text-right font-bold">{errorOnsubmit}</span>
-      </div>
-      <div className="flex justify-end gap-2">
-        <button
-          onClick={() => router.replace("/pokedex")}
-          className="w-24 rounded-lg bg-white p-2 text-black"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={onSubmit}
-          className="w-24 rounded-lg bg-[#272727] p-2 text-white"
-        >
-          save
-        </button>
-      </div>
+          <div className=" flex flex-col items-center rounded-lg bg-[#272727] p-4">
+            <span className="font-bold">Evolution Photo</span>
+            <SelectPictureComponent
+              handler={handleEvolutionPreviewChange}
+              imagePreview={
+                evolutionPreview
+                  ? URL.createObjectURL(evolutionPreview)
+                  : undefined
+              }
+            />
+          </div>
+          <div
+            className={`${
+              errorOnsubmit == undefined ? "hidden" : "flex"
+            } items-center justify-end gap-2 text-red-500`}
+          >
+            <MdError size={22} />
+            <span className="text-right font-bold">{errorOnsubmit}</span>
+          </div>
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => router.replace("/pokedex")}
+              className="w-24 rounded-lg bg-white p-2 text-black"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onSubmit}
+              className="w-24 rounded-lg bg-[#272727] p-2 text-white"
+            >
+              save
+            </button>
+          </div>
+        </>
+      ) : (
+        <div>Pokemon not found</div>
+      )}
     </div>
   );
 }

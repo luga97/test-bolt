@@ -7,6 +7,7 @@ import { type Pokemon } from "~/types";
 import Image from "next/image";
 import { FaArrowRightLong } from "react-icons/fa6";
 import Link from "next/link";
+import { SpinnerComponent } from "~/components/SpinnerComponent";
 export default function PokemonDetail() {
   const {
     back,
@@ -14,18 +15,33 @@ export default function PokemonDetail() {
   } = useRouter();
 
   const [pokemon, setPokemon] = useState<Pokemon | undefined>();
-
+  const [loading, setLoading] = useState<boolean>(true);
   useEffect(() => {
     const request = async () => {
-      const result = await fetch(`/api/pokemon/${id as string}`);
-      const resultJson = (await result.json()) as Pokemon;
-      console.log({ resultJson });
-      setPokemon(resultJson);
+      if (!id) {
+        console.log("aqui");
+        return;
+      }
+      try {
+        const result = await fetch(`/api/pokemon/${id as string}`);
+
+        if (result.status === 404) {
+          throw Error("pokemon not found");
+        }
+
+        const resultJson = (await result.json()) as Pokemon;
+        console.log({ resultJson });
+        setPokemon(resultJson);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     };
     void request();
   }, [id]);
 
-  //console.log(id);
+  console.log(loading, id, pokemon);
   return (
     <>
       <Head>
@@ -54,7 +70,9 @@ export default function PokemonDetail() {
               </Link>
             </div>
           </div>
-          {pokemon && (
+          {loading ? (
+            <SpinnerComponent />
+          ) : pokemon ? (
             <div className="flex grow items-center">
               <Image
                 src={pokemon.imgUri}
@@ -121,6 +139,8 @@ export default function PokemonDetail() {
                 </div>
               </div>
             </div>
+          ) : (
+            <div>POKEMON NOT FOUND</div>
           )}
         </div>
       </div>

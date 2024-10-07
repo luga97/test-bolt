@@ -4,15 +4,19 @@ import { IoFilterSharp, IoSearch } from "react-icons/io5";
 import Image from "next/image";
 import Link from "next/link";
 import { type Pokemon } from "~/types";
+import { SpinnerComponent } from "~/components/SpinnerComponent";
 
 export default function Pokedex() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   useEffect(() => {
     const request = async () => {
+      setLoading(true);
       const result = await fetch("/api/pokedex");
       const resultJson = (await result.json()) as Pokemon[];
       //console.log({ resultJson });
       setPokemons(resultJson);
+      setLoading(false);
     };
     void request();
   }, []);
@@ -49,9 +53,13 @@ export default function Pokedex() {
           </Link>
         </div>
         <div className="flex w-full flex-wrap items-center justify-around gap-8">
-          {pokemons.map((x) => (
-            <PokemonItemList key={x.name} pokemon={x} />
-          ))}
+          {pokemons.length > 0 ? (
+            pokemons.map((x) => <PokemonItemList key={x.name} pokemon={x} />)
+          ) : loading ? (
+            <SpinnerComponent />
+          ) : (
+            <div>NO DATA FOUND</div>
+          )}
         </div>
       </div>
     </div>

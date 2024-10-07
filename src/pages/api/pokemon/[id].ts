@@ -28,11 +28,16 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
   if (!id) {
     return res.status(400).json({ message: "Missing Pokemon ID" });
   }
-
+  console.log(id);
   try {
-    const p = await prisma.pokemon.findFirstOrThrow({
+    const p = await prisma.pokemon.findFirst({
       where: { id: parseInt(id as string) },
     });
+
+    if (!p) {
+      return res.status(404);
+    }
+
     const Abilities = p.abilities.split(",");
     const EggGroups = p.eggGroups.split(",");
 
@@ -45,6 +50,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(200).json(data);
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 }
